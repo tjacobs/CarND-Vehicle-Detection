@@ -8,9 +8,9 @@ The goals of this project are the following:
 * Run your pipeline on a video stream and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
 * Estimate a bounding box for vehicles detected.
 
---
+---
 
-###Histogram of Oriented Gradients (HOG)
+### Histogram of Oriented Gradients (HOG)
 
 #### 1. Read data
 
@@ -34,7 +34,7 @@ I then explored different color spaces and different `skimage.hog()` parameters 
 
 #### 2. Test images
 
---
+---
 
 ### Video Implementation
 
@@ -60,7 +60,7 @@ Here the resulting bounding boxes are drawn onto the last frame in the series:
 
 ![](test_images/.png)
 
---
+---
 
 ### Discussion
 
