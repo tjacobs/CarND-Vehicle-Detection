@@ -57,33 +57,37 @@ Next, I train the classifier over the 17,760 vehicle and non-vehicle images, mak
 
 ### 3. Sliding Window Search
 
-Next up I define a function so that I can give it an area in an image and window size parameters and it will return co-ordinates of windows. I 
+Next up I define a function so that I can give it an area in an image and window size parameters and it will return co-ordinates of windows. I pass it the area from 45% down the image, which is just above the horizon, because cars can't fly yet, all the way down to 80% down the image, where the hood of the car is covering the road. I use 64, 128, 256, 512 pixel sqaure windows, as shown all overlapped here:
 
 ![](output_images/5.png)
 
-### 4. Heatmapping
-
-### 5. Video Implementation
-
-Here's [my video result](./project_video.mp4).
-
-### 6. Filter for false positives
-
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
-
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
-
-Here are six frames and their corresponding heatmaps:
-
-Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
+For each frame of the video, I run the classifer over each of the windows defined by the function, and see if a car is detected in that window.
 
 ![](output_images/6.png)
 
-Here the resulting bounding boxes are drawn onto the last frame in the series:
+### 4. Heatmapping
+
+The classifier is not perfect, and often predicts false positives. So in order to work around this, I define a global heat image that remains remembered frame by frame over the video. When the classifer finds a car in a window, I add the value of 1 to all the pixels in that window. I then threshold the heatmap by 2, so that only places in the image where the classifer detected a car in the same area more than twice is shown.
+
+
+### 5. Bounding boxes
+
+After getting the heatmap, I use SciPy's `label()` to find where the bounding boxes are for the detections.
 
 ![](output_images/7.png)
 
----
+### 6. Video Implementation
 
-### Discussion
+After running the pipeline one frame at a time over the video, I end up with bounding boxes drawn on each frame where cars were detected. 
+
+Here's [my video result](./project_video.mp4).
+
+### 7. Discussion
+
+The end video quickly finds the white car and draws a bounding box over it. The position of the bounding box is not exactly around where the car is though.
+
+And the black car seems to be very difficult for the detector to detect.
+
+There are a number of false positives that remain detected over multiple frames of the videos, such as up in the trees and the road dividers.
+
 
