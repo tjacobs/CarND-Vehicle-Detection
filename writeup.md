@@ -34,6 +34,7 @@ pix_per_cell = 8              # HOG pixels per cell
 cell_per_block = 2            # HOG cells per block
 hog_channel = 'ALL'           # 0, 1, 2, "GRAY" or "ALL"
 ```
+After initially trying RGB color space, I switched it to YCrCb after the advice from the review, and found that the classifier performed much better at detecting the cars and eliminating false positives in the images and videos, so I went with that.
 
 The gradient feature vector run on the above vehicle image ends up looking like this:
 
@@ -56,11 +57,11 @@ The feature vector ends up having 8,460 features.
 
 Next, I train the classifier over the 17,760 vehicle and non-vehicle images, making sure to normalize them first. This can be seen in the fourth code cell in the notebook. I use a LinearSVC, and it takes about 40 seconds to train it over the training set. I acheive 98.56% accuracy using a 20% randomly selected validation set.
 
+After initially using simple just the `prediction()` function to choose the hot windows, I ended up using `decision_function()` function and chose the windows only greater than `20` distance. This resulted in much better elimination of false positives.
+
 ### 3. Sliding Window Search
 
-Next up I define a function so that I can give it an area in an image and window size parameters and it will return coordinates of windows. I pass it the area from 45% down the image, which is just above the horizon, because cars can't fly yet, all the way down to 80% down the image, where the hood of the car is covering the road. I use 64, 128, 256, 512 pixel sqaure windows, as shown all overlapped here:
-
-![](output_images/5.png)
+Next up I define a function so that I can give it an area in an image and window size parameters and it will return coordinates of windows. I pass it the area from 45% down the image, which is just above the horizon, because cars can't fly yet, all the way down to 80% down the image, where the hood of the car is covering the road. I use 64, 96, 128, 256, 512 pixel sqaure windows, with 75% overlap.
 
 For each frame of the video, I run the classifer over each of the windows defined by the function, and see if a car is detected in that window.
 
