@@ -2,3 +2,6 @@
 examples/.DS_Store
 
 .ipynb_checkpoints/Vehicle Detection-checkpoint.ipynb
+
+train_data/non-vehicles
+train_data/vehicles
