@@ -2,15 +2,14 @@
 
 The goal of this project is to detect cars in a video feed and draw bounding boxes around them.
 
-We do this by:
+We do this with the following steps:
 
-* Defining a feature extractor. We use a Histogram of Oriented Gradients (HOG) feature extractor, a color feature extractor, and a spatial feature extractor. 
+* Define a feature extractor. We use a Histogram of Oriented Gradients (HOG) feature extractor, a color feature extractor, and a spatial feature extractor. 
 * Train a classifier on our labeled training set of images of cars and non-cars.
 * Search windows in images for cars using the trained classifier.
 * Run on a video stream and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
 * Draw a bounding box around vehicles detected.
 
----
 
 ### 1. Feature Extraction
 
@@ -55,7 +54,7 @@ The feature vector ends up having 8,460 features.
 
 ### 2. Train the classifier
 
-Next, I train the classifier over the 17,760 vehicle and non-vehicle images, making sure to normalize them first. This can be seen in the fourth code cell in the notebook. I acheive 98.56% accuracy using a 20% randomly selected validation set.
+Next, I train the classifier over the 17,760 vehicle and non-vehicle images, making sure to normalize them first. This can be seen in the fourth code cell in the notebook. I use a LinearSVC, and it takes about 40 seconds to train it over the training set. I acheive 98.56% accuracy using a 20% randomly selected validation set.
 
 ### 3. Sliding Window Search
 
@@ -69,8 +68,7 @@ For each frame of the video, I run the classifer over each of the windows define
 
 ### 4. Heatmapping
 
-The classifier is not perfect, and often predicts false positives. So in order to work around this, I define a global `heat` variable that remains remembered frame by frame over the video. When the classifer finds a car in a window, I add the value of 1 to all the pixels in that window area in the `heat` image. I then threshold the heat image by 2, so that only places in the image where the classifer detected a car in the same area more than twice is shown.
-
+The classifier is not perfect, and often predicts false positives. So in order to work around this, I define a global `heat` variable that remains persistent frame by frame over the video. When the classifer finds a car in a window, I add the value of 1 to all the pixels in that window area in the `heat` image. I then threshold the heat image by 2, so that only places in the image where the classifer detected a car in the same area more than twice in a frame or over multiple frames are shown. Finally I fade the heatmap away by 20% each frame so that when cars move around, they are no longer detected in that area.
 
 ### 5. Bounding boxes
 
@@ -82,13 +80,11 @@ After getting the heatmap, I use SciPy's `label()` to find where the bounding bo
 
 After running the pipeline one frame at a time over the video, I end up with bounding boxes drawn on each frame where cars were detected. 
 
-Here's [my video result](./project_video.mp4).
+Here's [my video result](./project_output.mp4).
 
 ### 7. Discussion
 
-The end video quickly finds the white car and draws a bounding box over it. The position of the bounding box is not exactly around where the car is though.
-
-And the black car seems to be very difficult for the detector to detect.
+The end video quickly finds the white car and draws a bounding box over it. The position of the bounding box is not always exactly around where the car is though.
 
 There are a number of false positives that remain detected over multiple frames of the videos, such as up in the trees and the road dividers.
 
